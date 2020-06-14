@@ -1,4 +1,3 @@
 
-<title> GardoShop.com
 
-This website is under construction :)
+This website is under construction :) Test
