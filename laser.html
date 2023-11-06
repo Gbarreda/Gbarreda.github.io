@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SVG Text Generator</title>
+</head>
+
+<body>
+
+    <!-- Inline styles -->
     <style>
         #downloadBtn {
             background-color: #4B0082; /* Dark purple color */
@@ -15,23 +20,22 @@
             margin-top: 5px; /* Space added above button */
             margin-bottom: 2px; /* Reduced space below button */
         }
-        
+
         #instructionText {
-    font-size: 14px;
-    margin: 0; /* Reset any default margin */
-    padding: 0; /* Reset any default padding */
-    margin-bottom: 10px; /* Space between instruction and textarea */
-    text-align: left; /* Ensures left alignment */
-}
+            font-size: 14px;
+            margin: 0; /* Reset any default margin */
+            padding: 0; /* Reset any default padding */
+            margin-bottom: 10px; /* Space between instruction and textarea */
+            text-align: left; /* Ensures left alignment */
+        }
 
-#instructionText span {
-    display: inline-block; /* Ensures the span behaves like an inline block element */
-    background-color: #FFEBAA; /* Medium highlighted yellow */
-    padding: 5px; /* Adjust this value to control space around the text */
-    border-radius: 5px;
-}
+        #instructionText span {
+            display: inline-block; /* Ensures the span behaves like an inline block element */
+            background-color: #FFEBAA; /* Medium highlighted yellow */
+            padding: 5px; /* Adjust this value to control space around the text */
+            border-radius: 5px;
+        }
 
-        
         #userText {
             width: 80%;
             height: 50px;
@@ -49,7 +53,7 @@
             box-shadow: 0 0 5px #4B0082;
             outline: none; /* This removes the default focus ring */
         }
-        
+
         #svgContainer {
             border: 1px solid #000; /* This adds a thin black border around the container */
             display: inline-block; /* Makes the container fit the content's size */
@@ -67,40 +71,35 @@
             padding: 0;
         }
     </style>
-</head>
 
-<body>
-    
-   <!-- Instruction text -->
-    <div id="instructionText"><span>Enter the text you need in the input field below (Only use CAPITAL letters).<br>Use enters to start on a new line.  Press download to download a SVG file.</span></div>
-    
-    
+     <!-- Instruction text -->
+    <div id="instructionText">
+        <span>Enter the text you need in the input field below (Only use CAPITAL letters).<br>
+        Use enters to start on a new line. After generating, right-click the "Download SVG" link and choose "Save As" to download the SVG file.</span>
+    </div>
 
     <!-- Input for user text -->
     <textarea id="userText" oninput="generateSVG()" rows="4" cols="50"></textarea>
-    
-	<br>
-    <!-- Button to trigger SVG download -->
-    <button id="downloadBtn">Download SVG</button>
-    
+    <br>
+
+    <!-- Anchor link to allow "Right Click" and "Save As" -->
+    <a id="downloadLink" style="display:none; cursor:pointer; color: #4B0082;">Download SVG</a> <!-- The link is initially hidden -->
+
     <!-- Label for Preview -->
     <p style="margin-top: 10px; margin-bottom: 5px;">Preview:</p>
-    
+
     <!-- Container to display the SVG -->
     <div id="svgContainer"></div>
 
-<script>
+    <script>
 
 
 
 const svgData = {
 
-    	'A': `<svg version="1.1"
-	 id="Layer_1" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#"
-	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="10 0 270 1000"
-	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+    	'A': `<svg version="1.1" x="0px" y="0px" viewBox="10 0 270 1000" style="enable-background:new 0 0 270 1000;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+    .st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
 </style>
 <path vector-effect="non-scaling-stroke" class="st0" d="M112,191h45.7 M98,227.3l37-94.5l37,94.5"/>
 </svg>`,  // Paste content of 'A.svg' here
@@ -495,18 +494,15 @@ const svgData = {
 };
 
 
-function generateSVG() {
+function generateSVG(returnContent = false) {
     let inputText = document.getElementById('userText').value;
-
-    // Convert input text to an array of characters
     let characters = [...inputText];
 
-    // Create SVG for each character
     let xPosition = 0;  
     let yPosition = 0;  
     let lineHeight = 100; 
     let svgContent = '';
-    let maxWidth = 0; // Introduce maxWidth to keep track of the widest line
+    let maxWidth = 0;
 
     characters.forEach(char => {
         if (char === '\n') { 
@@ -631,30 +627,39 @@ function generateSVG() {
     let estimatedWidth = maxWidth + 45; 
     let estimatedHeight = yPosition + 506.25; 
     svgContent = `<svg width="${estimatedWidth}" height="${estimatedHeight}" xmlns="http://www.w3.org/2000/svg">${svgContent}</svg>`;
-    document.getElementById('svgContainer').innerHTML = svgContent;
+
+    // Override for xmlns attributes
+    svgContent = svgContent.replace(/xmlns="https:\/\//g, 'xmlns="http://');
+    svgContent = svgContent.replace(/xmlns:xlink="https:\/\//g, 'xmlns:xlink="http://');
+    
+    if (returnContent) {
+        return svgContent;
+    } else {
+        document.getElementById('svgContainer').innerHTML = svgContent;
+    }
 }
 
-document.getElementById('downloadBtn').addEventListener('click', function() {
-    let svgContent = document.getElementById('svgContainer').innerHTML;
-    let blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
+document.getElementById('userText').addEventListener('input', function() {
+    // Generate SVG content directly from the source
+    let svgContent = generateSVG(true);
+
+    // Manual addition of the standalone XML line for the downloadable SVG
+    let downloadableSVGContent = '<?xml version="1.0" standalone="no"?>\n' + svgContent;
+
+    let blob = new Blob([downloadableSVGContent], { type: 'image/svg+xml;charset=utf-8' });
     let url = window.URL.createObjectURL(blob);
-
-    let a = document.createElement('a');
-
     let filename = document.getElementById('userText').value.toUpperCase().replace(/[^A-Z0-9\-!?, ]/g, '').replace(/ /g, '_');
-    a.download = `${filename}.svg`;
-
-    a.href = url;
-    a.click();
+    
+    let downloadLink = document.getElementById('downloadLink');
+    downloadLink.href = url;
+    downloadLink.download = `${filename}.svg`;
+    downloadLink.style.display = 'block';
 });
 
-// Automatically generate SVG on page load
-generateSVG();
 
-</script>
+    </script>
 
 </body>
 </html>
-
 
 
