@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Text Generator</title>
+    <style>
+        #downloadBtn {
+            background-color: #4B0082; /* Dark purple color */
+            color: #FFFFFF; /* White text */
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 5px; /* Space added above button */
+            margin-bottom: 2px; /* Reduced space below button */
+        }
+        
+        #instructionText {
+    font-size: 14px;
+    margin: 0; /* Reset any default margin */
+    padding: 0; /* Reset any default padding */
+    margin-bottom: 10px; /* Space between instruction and textarea */
+    text-align: left; /* Ensures left alignment */
+}
+
+#instructionText span {
+    display: inline-block; /* Ensures the span behaves like an inline block element */
+    background-color: #FFEBAA; /* Medium highlighted yellow */
+    padding: 5px; /* Adjust this value to control space around the text */
+    border-radius: 5px;
+}
+
+        
+        #userText {
+            width: 80%;
+            height: 50px;
+            font-size: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 5px; /* Adjusted margin for spacing */
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        #userText:focus {
+            border-color: #4B0082;
+            box-shadow: 0 0 5px #4B0082;
+            outline: none; /* This removes the default focus ring */
+        }
+        
+        #svgContainer {
+            border: 1px solid #000; /* This adds a thin black border around the container */
+            display: inline-block; /* Makes the container fit the content's size */
+            min-width: 1000px; /* Minimum width; ensures a visible box */
+            min-height: 20px; /* Minimum height; ensures a visible box */
+            max-width: 1000px; /* Maximum width; adjust as needed */
+            max-height: 1000px; /* Maximum height; adjust as needed */
+            overflow: auto; /* Allows scrolling when content exceeds container size */
+        }
+
+        #svgContainer svg {
+            display: inline-block;
+            vertical-align: top; /* This will align the SVG to the top */
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    
+   <!-- Instruction text -->
+    <div id="instructionText"><span>Enter the text you need in the input field below (Only use CAPITAL letters).<br>Use enters to start on a new line.  Press download to download a SVG file.</span></div>
+    
+    
+
+    <!-- Input for user text -->
+    <textarea id="userText" oninput="generateSVG()" rows="4" cols="50"></textarea>
+    
+	<br>
+    <!-- Button to trigger SVG download -->
+    <button id="downloadBtn">Download SVG</button>
+    
+    <!-- Label for Preview -->
+    <p style="margin-top: 10px; margin-bottom: 5px;">Preview:</p>
+    
+    <!-- Container to display the SVG -->
+    <div id="svgContainer"></div>
+
+<script>
+
+
+
+const svgData = {
+
+    	'A': `<svg version="1.1"
+	 id="Layer_1" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="10 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M112,191h45.7 M98,227.3l37-94.5l37,94.5"/>
+</svg>`,  // Paste content of 'A.svg' here
+   	'B': `<svg version="1.1"
+	 id="Layer_1" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="15 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M126.9,177.3c12.2,0,22.2-10,22.2-22.3c0-12.3-10-22.3-22.2-22.3h-11v94.5
+	h14.7c13.2-0.8,23.5-11.8,23.5-25c0-13.2-10.2-24.2-23.5-25h-14.7"/>
+</svg>`,  // Paste content of 'B.svg' here
+	'C': `<svg version="1.1"
+	 id="Layer_1" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="-5 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M177.1,150.6c-12.5-15.7-33.6-21.8-52.5-15.2S92.9,159.9,92.9,180
+	c0,20.1,12.7,38,31.7,44.6s40,0.5,52.5-15.2"/>
+</svg>`,  // Paste content of 'C.svg' here
+	'D': `<svg version="1.1"
+	 id="Layer_1" xmlns:svg="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M177.1,180c0-26.1-21.2-47.3-47.2-47.3h-37v94.5h37
+	C155.9,227.3,177.1,206,177.1,180L177.1,180"/>
+</svg>
+`,  // Paste content of 'D.svg' here
+	'E': `<svg version="1.1"
+	 id="Layer_1" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="11 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M149.9,227.3h7.5 M149.9,227.3h-37.2v-94.5h37.2 M112.6,177.3h37.2"/>
+</svg>`,  // Paste content of 'E.svg' here
+	'F': `<svg version="1.1"
+	 id="Layer_1" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="10 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M116.5,177.2h37 M116.5,227.2v-94.5h37"/>
+</svg>`,  // Paste content of 'F.svg' here
+	'G': `<svg version="1.1"
+	 id="Layer_1" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="4 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M177.1,150.6c-12.5-15.7-33.5-21.8-52.5-15.2s-31.7,24.5-31.7,44.5
+	c0,20.2,12.8,38,31.7,44.7c19,6.5,40,0.5,52.5-15.2v-29.2 M177.1,180.2h-38"/>
+</svg>`,  // Paste content of 'G.svg' here
+	'H': `<svg version="1.1"
+	 id="Layer_1" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M172.5,132.7v94.5 M97.5,177.3h75 M97.5,132.7v94.5"/>
+</svg>`,  // Paste content of 'H.svg' here
+	'I': `<svg version="1.1"
+    id="Layer_1" xmlns:svg="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 -3 80 1000"
+    style="enable-background:new 0 -3 80 1000;" xml:space="preserve">
+<style type="text/css">
+    .st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M10,132.8v94.5"/>
+</svg>`,  // Paste content of 'I.svg' here
+	'J': `<svg version="1.1"
+	 id="Layer_1" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="15 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M112.5,217.8c7.5,9,17.5,12.5,27.5,8.8c12.5-3.8,17.5-14,17.5-25V132"/>
+</svg>`,  // Paste content of 'J.svg' here
+	'K': `<svg version="1.1"
+	 id="Layer_1" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="10 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M160,227.3l-32.5-58.8 M155,132.7L110,191 M110,132.7v94.5"/>
+</svg>`,  // Paste content of 'K.svg' here
+	'L': `<svg version="1.1"
+	 id="Layer_1" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="10 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M110,132.7v94.5l0,0h50"/>
+</svg>`,  // Paste content of 'L.svg' here
+	'M': `<svg version="1.1"
+	 id="Layer_1" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="-8 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M87.5,227.3l10-94.5l37.5,94.5l37.5-94.5l10,94.5"/>
+</svg>`,  // Paste content of 'M.svg' here
+	'N': `<svg version="1.1"
+	 id="Layer_1" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M97.5,227.3v-94.5l75,94.5v-94.5"/>
+</svg>`,  // Paste content of 'N.svg' here
+	'O': `<svg version="1.1"
+	 id="Layer_1" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M182.5,180c0-17-9-32.6-23.7-41.1s-32.8-8.5-47.5,0S87.5,163,87.5,180
+	s9,32.6,23.7,41.1s32.8,8.5,47.5,0S182.5,197,182.5,180L182.5,180"/>
+</svg>`,  // Paste content of 'O.svg' here
+	'P': `<svg version="1.1"
+	 id="Layer_1" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="10 0 270 1000"
+	 style="enable-background:new 10 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M130,180c12.5,0,25-10.6,25-23.7c0-13-12.5-23.6-25-23.6 M130,180h-15
+	 M115,227.3v-94.5h15"/>
+</svg>`,  // Paste content of 'P.svg' here
+	'Q': `<svg version="1.1"
+	 id="Layer_1" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="-10 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M182.5,227.2L135,203.5 M182.5,180c0-17-9-32.6-23.7-41.1
+	c-14.7-8.5-32.8-8.5-47.5,0C96.6,147.4,87.5,163,87.5,180s9,32.6,23.7,41.1c14.7,8.5,32.8,8.5,47.5,0
+	C173.4,212.6,182.5,197,182.5,180L182.5,180"/>
+</svg>`,  // Paste content of 'Q.svg' here
+	'R': `<svg version="1.1"
+	 id="Layer_1" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="11 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M127.5,180l30,47.2 M112.5,180h15c12.5,0,25-10.6,25-23.7
+	c0-13-12.5-23.6-25-23.6h-15v94.5"/>
+</svg>`,  // Paste content of 'R.svg' here
+	'S': `<svg version="1.1"
+	 id="Layer_1" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="15 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M111.3,220v1.2 M111.3,221.3c7.5,4.2,17.5,6.2,25,6
+	c12.5-0.8,22.5-11.8,22.5-25c0-13.2-10-24.2-22.5-25c-12.5,0-22.5-10-22.5-22.3c0-12.3,10-22.3,22.5-22.3l0,0c7.5,0.3,15,2.2,20,5.5
+	"/>
+</svg>`,  // Paste content of 'S.svg' here
+	'T': `<svg version="1.1"
+	 id="Layer_1" xmlns:svg="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="10 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M135,132.7v94.5 M97.5,132.7h75"/>
+</svg>`,  // Paste content of 'T.svg' here
+	'U': `<svg version="1.1"
+	 id="Layer_1" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="10 17 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M98.8,136.8v57.4c2.5,16.7,20,29,37.5,29c17.5,0,32.5-12,35-29v-57.4" transform="scale(1, 1.1)"/>
+</svg>`,  // Paste content of 'U.svg' here
+	'V': `<svg version="1.1"
+	 id="Layer_1" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="5 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M97.5,132.7l37.5,94.5l37.5-94.5"/>
+</svg>`,  // Paste content of 'V.svg' here
+	'W': `<svg version="1.1"
+	 id="Layer_1" xmlns:svg="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="-15 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M77.5,132.7l27.5,94.5l30-94.5l27.5,94.5l30-94.5"/>
+</svg>`,  // Paste content of 'W.svg' here
+	'X': `<svg version="1.1"
+	 id="Layer_1" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M172.5,132.7l-75,94.5 M97.5,132.7l75,94.5"/>
+</svg>`,  // Paste content of 'X.svg' here
+	'Y': `<svg version="1.1"
+	 id="Layer_1" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="11 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M135,180v47.2 M172.5,132.7L135,180l-37.5-47.3"/>
+</svg>`,  // Paste content of 'Y.svg' here
+	'Z': `<svg version="1.1"
+	 id="Layer_1" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M98.8,132.7h72.5l-72.5,94.5h72.5"/>
+</svg>`,  // Paste content of 'Z.svg' here
+
+'-': `<svg version="1.1"
+	 id="Layer_1" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M112.2,180h45.7"/>
+</svg>`,  // Paste content of '-.svg' here
+
+	'.': `<svg version="1.1"
+	 id="Layer_1" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="35 -40 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M135,180.1v-0.2"/>
+</svg>`,  // Paste content of '..svg' here
+	',': `<svg version="1.1"
+	 id="Layer_1" xmlns:svg="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="40 -40 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M136.2,178.4l-2.5,3.2"/>
+</svg>`,  // Paste content of ',.svg' here
+	'!': `<svg version="1.1"
+	 id="Layer_1" xmlns:svg="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="35 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M135,132.7v83 M135,227.3V227"/>
+</svg>`,  // Paste content of '!.svg' here
+	'?': `<svg version="1.1"
+	 id="Layer_1" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="15 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M133.9,215.8v-24.7l0,0c10,0,20-6,25-15.7c5-9.7,7.5-21.3,0-30.3
+	c-5-9-17.5-13.6-30-12.1c-10,1.6-20,9-22.5,19.3 M133.9,227.3v-0.2"/>
+</svg>`,  // Paste content of '?.svg' here
+	'0': `<svg version="1.1"
+	 id="Layer_1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M148.3,146.3c-7.3-7.4-19.3-7.4-26.6,0c-18.6,18.7-18.6,48.7,0,67.4
+	c7.3,7.4,19.3,7.4,26.6,0C166.9,195,166.9,165,148.3,146.3L148.3,146.3"/>
+</svg>`,  // Paste content of '0.svg' here
+	'1': `<svg version="1.1"
+	 id="Layer_1" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M146.3,219.2v-78.5l-22.6,12.6"/>
+</svg>`,  // Paste content of '1.svg' here
+	'2': `<svg version="1.1"
+	 id="Layer_1" xmlns:cc="http://creativecommons.org/ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M116.3,145.4c5.7-3,12.1-4.6,18.7-4.6c15,0,23.9,16.6,15.4,28.9l-34.1,49.5
+	h37.3"/>
+</svg>`,  // Paste content of '2.svg' here
+	'3': `<svg version="1.1"
+	 id="Layer_1" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M111.9,212c14.2,13,37.2,7.8,44.3-10.1c7.1-17.9-6.2-37.2-25.6-37.2
+	l18.7-23.9h-37.3"/>
+</svg>`,  // Paste content of '3.svg' here
+	'4': `<svg version="1.1"
+	 id="Layer_1" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M148.6,219.2v-78.5l-40.8,58.9h54.5"/>
+</svg>`,  // Paste content of '4.svg' here
+	'5': `<svg version="1.1"
+	 id="Layer_1" xmlns:svg="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M107.6,208.3c7.3,6.9,17,10.9,27.2,11.1c18.6,0,31.9-17.8,26.4-35.4
+	c-5.5-17.6-26.6-24.9-41.9-14.5l2.4-28.9H162"/>
+</svg>`,  // Paste content of '5.svg' here
+	'6': `<svg version="1.1"
+	 id="Layer_1" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M135,140.8l-22.1,42.7 M159.8,194.6c0-8.8-4.7-16.9-12.4-21.3
+	c-7.7-4.4-17.1-4.4-24.8,0c-7.7,4.4-12.4,12.5-12.4,21.3c0,8.8,4.7,16.9,12.4,21.3c7.7,4.4,17.1,4.4,24.8,0
+	C155.1,211.5,159.8,203.4,159.8,194.6L159.8,194.6"/>
+</svg>`,  // Paste content of '6.svg' here
+	'7': `<svg version="1.1"
+	 id="Layer_1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M111.6,140.7l46.9,0.2l-46.9,78.5"/>
+</svg>`,  // Paste content of '7.svg' here
+	'8': `<svg version="1.1"
+	 id="Layer_1" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M152.6,158.2c0-6.2-3.4-12-8.8-15.1c-5.4-3.1-12.1-3.1-17.6,0
+	c-5.4,3.1-8.8,8.9-8.8,15.1c0,6.2,3.3,12,8.8,15.1c5.4,3.1,12.2,3.1,17.6,0C149.2,170.2,152.6,164.4,152.6,158.2L152.6,158.2
+	 M157,197.4c0-7.8-4.2-15-11-18.9c-6.8-3.9-15.2-3.9-22,0c-6.8,3.9-11,11.1-11,18.9c0,7.8,4.2,15,11,18.9c6.8,3.9,15.2,3.9,22,0
+	C152.8,212.4,157,205.2,157,197.4L157,197.4"/>
+</svg>`,  // Paste content of '8.svg' here
+	'9': `<svg version="1.1"
+	 id="Layer_1" xmlns:svg="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 270 1000"
+	 style="enable-background:new 0 0 270 1000;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;}
+</style>
+<path vector-effect="non-scaling-stroke" class="st0" d="M135,219.3l22.1-42.7 M159.8,165.4c0-8.8-4.7-16.9-12.4-21.3
+	c-7.7-4.4-17.1-4.4-24.8,0c-7.7,4.4-12.4,12.5-12.4,21.3c0,8.8,4.7,16.9,12.4,21.3c7.7,4.4,17.2,4.4,24.8,0
+	C155.1,182.3,159.8,174.2,159.8,165.4L159.8,165.4"/>
+</svg>`,  // Paste content of '9.svg' here
+
+    // ... continue for other letters
+};
+
+
+function generateSVG() {
+    let inputText = document.getElementById('userText').value;
+
+    // Convert input text to an array of characters
+    let characters = [...inputText];
+
+    // Create SVG for each character
+    let xPosition = 0;  
+    let yPosition = 0;  
+    let lineHeight = 100; 
+    let svgContent = '';
+    let maxWidth = 0; // Introduce maxWidth to keep track of the widest line
+
+    characters.forEach(char => {
+        if (char === '\n') { 
+            if (xPosition > maxWidth) { // Compare xPosition with maxWidth after a line ends
+                maxWidth = xPosition; // Update maxWidth if xPosition is greater
+            }
+            xPosition = 0; 
+            yPosition += lineHeight; 
+        } else if (char === ' ') {
+            xPosition += 56.25; // This dictates the spacing of the space input
+        } else if (svgData[char]) {
+            svgContent += `<svg x="${xPosition}" y="${yPosition}" width="135" height="506.25" viewBox="0 0 40 150">${svgData[char]}</svg>`;
+            
+            // Check for individual characters and adjust spacing
+            if (char === 'I') {
+                xPosition += 20; // Adjust this for spacing for 'I'
+            } 
+            
+                else if (char === 'A') {
+                xPosition += 45; // Adjust this for spacing for 'A'
+            } 
+                else if (char === 'B') {
+                xPosition += 38; // Adjust this for spacing for 'B'
+            } 
+            
+                else if (char === 'C') {
+                xPosition += 58; // Adjust this for spacing for 'B'
+            } 
+            
+                else if (char === 'E') {
+                xPosition += 38; // Adjust this for spacing for 'B'
+            } 
+            
+                else if (char === 'F') {
+                xPosition += 38; // Adjust this for spacing for 'B'
+            } 
+            
+                else if (char === 'J') {
+                xPosition += 42; // Adjust this for spacing for 'B'
+            } 
+            
+                else if (char === 'K') {
+                xPosition += 40; // Adjust this for spacing for 'B'
+            }
+            
+                else if (char === 'L') {
+                xPosition += 38; // Adjust this for spacing for 'B'
+                } 
+            
+                else if (char === 'M') {
+                    xPosition += 60; // Adjust this for spacing for 'B'
+                } 
+            
+                else if (char === 'O') {
+                    xPosition += 55; // Adjust this for spacing for 'B'
+                } 
+                
+                else if (char === 'P') {
+                    xPosition += 38; // Adjust this for spacing for 'B'
+                } 
+                
+                else if (char === 'Q') {
+                    xPosition += 63; // Adjust this for spacing for 'B'
+                } 
+                
+                else if (char === 'R') {
+                    xPosition += 38; // Adjust this for spacing for 'B'
+                } 
+                
+                else if (char === 'S') {
+                    xPosition += 38; // Adjust this for spacing for 'B'
+                } 
+                
+                else if (char === 'T') {
+                    xPosition += 45; // Adjust this for spacing for 'B'
+                } 
+                
+                else if (char === 'U') {
+                    xPosition += 45; // Adjust this for spacing for 'B'
+                } 
+                
+                else if (char === 'V') {
+                    xPosition += 48; // Adjust this for spacing for 'B'
+                } 
+                
+                else if (char === 'W') {
+                    xPosition += 65; // Adjust this for spacing for 'B'
+                } 
+                
+                else if (char === 'Y') {
+                    xPosition += 45; // Adjust this for spacing for 'B'
+                } 
+                
+                else if (char === '!') {
+                    xPosition += 20; // Adjust this for spacing for 'B'
+                } 
+                
+                else if (char === '?') {
+                    xPosition += 40; // Adjust this for spacing for 'B'
+                } 
+                
+                else if (char === ',') {
+                    xPosition += 20; // Adjust this for spacing for ','
+                } 
+                
+                else if (char === '.') {
+                    xPosition += 20; // Adjust this for spacing for '.'
+                } 
+                
+                else {
+                xPosition += 51; // Adjust this for spacing for all other characters
+            }
+        }
+    });
+
+    // After the loop, check one last time in case the last line is the widest
+    
+    if (xPosition > maxWidth) {
+        maxWidth = xPosition;
+    }
+
+    let estimatedWidth = maxWidth + 45; 
+    let estimatedHeight = yPosition + 506.25; 
+    svgContent = `<svg width="${estimatedWidth}" height="${estimatedHeight}" xmlns="http://www.w3.org/2000/svg">${svgContent}</svg>`;
+    document.getElementById('svgContainer').innerHTML = svgContent;
+}
+
+document.getElementById('downloadBtn').addEventListener('click', function() {
+    let svgContent = document.getElementById('svgContainer').innerHTML;
+    let blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
+    let url = window.URL.createObjectURL(blob);
+
+    let a = document.createElement('a');
+
+    let filename = document.getElementById('userText').value.toUpperCase().replace(/[^A-Z0-9\-!?, ]/g, '').replace(/ /g, '_');
+    a.download = `${filename}.svg`;
+
+    a.href = url;
+    a.click();
+});
+
+// Automatically generate SVG on page load
+generateSVG();
+
+</script>
+
+</body>
+</html>
+
+
+
